@@ -20,6 +20,37 @@
       };
 
       const map = new kakao.maps.Map(mapContainer, mapOptions);
+      
+      function addMarker(position) {
+        const marker = new kakao.maps.Marker({
+          position,
+        });
+        marker.setMap(map);
+      }
+
+      function showUserLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userLatLng = new kakao.maps.LatLng(
+                position.coords.latitude,
+                position.coords.longitude
+              );
+              map.setCenter(userLatLng);
+              addMarker(userLatLng);
+            },
+            (error) => {
+              console.error("Error getting user location:", error);
+            }
+          );
+        } else {
+          console.error("Geolocation is not supported by this browser.");
+        }
+      }
+
+      if (!window.ReactNativeWebView) {
+        showUserLocation();
+      }
     </script>
   </body>
 </html>
