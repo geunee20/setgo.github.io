@@ -19,14 +19,14 @@ if (window.ReactNativeWebView) {
   showUserLocation();
 }
 
-if (!window.ReactNativeWebView) {
-}
+console.log(center);
 
 function addMarker(position) {
   const marker = new kakao.maps.Marker({
-    position,
+    map: map,
+    position: position,
+    title: `${position}`,
   });
-  marker.setMap(map);
 }
 
 function showUserLocation() {
