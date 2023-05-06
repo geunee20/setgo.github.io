@@ -1,3 +1,4 @@
+const urlParams = new URLSearchParams(window.location.search);
 var center = new kakao.maps.LatLng(33.450701, 126.570667);
 const mapContainer = document.getElementById("map");
 const mapOptions = {
