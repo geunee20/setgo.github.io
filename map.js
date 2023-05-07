@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 var center = new kakao.maps.LatLng(33.450701, 126.570667);
+var distance;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
   center: center,
@@ -14,6 +15,8 @@ try {
       parseFloat(urlParams.get("lat")),
       parseFloat(urlParams.get("lng"))
     );
+    distance = parseFloat(urlParams.get("diatance"));
+    console.log(distance);
     addMarker(center);
     map.setCenter(center);
   } else {
