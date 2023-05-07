@@ -27,6 +27,10 @@ try {
   }
 } catch (e) {
   console.log(e);
+  dataToSend = JSON.stringify({
+    err: e,
+  });
+  window.ReactNativeWebView.postMessage(dataToSend);
 }
 
 function addMarker(position) {
@@ -49,10 +53,18 @@ function showUserLocation() {
       },
       (error) => {
         console.error("Error getting user location:", error);
+        dataToSend = JSON.stringify({
+          err: error,
+        });
+        window.ReactNativeWebView.postMessage(dataToSend);
       }
     );
   } else {
     console.error("Geolocation is not supported by this browser.");
+    dataToSend = JSON.stringify({
+      err: error,
+    });
+    window.ReactNativeWebView.postMessage(dataToSend);
   }
 }
 
