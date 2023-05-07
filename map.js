@@ -9,44 +9,42 @@ const mapOptions = {
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
 
-try {
-  if (window.ReactNativeWebView) {
-    latitude = urlParams.get("lat");
-    longitude = urlParams.get("lon");
-    distance = parseFloat(urlParams.get("distance"));
-  } else if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-      },
-      (error) => {
-        console.error("Error getting user location:", error);
-        dataToSend = JSON.stringify({
-          err: error,
-        });
-        window.ReactNativeWebView.postMessage(dataToSend);
-      }
-    );
-    distance = parseFloat(urlParams.get("distance"));
-  }
+(async () => {
+  try {
+    if (window.ReactNativeWebView) {
+      latitude = urlParams.get("lat");
+      longitude = urlParams.get("lon");
+      distance = parseFloat(urlParams.get("distance"));
+    } else {
+      const position = await getCurrentPosition();
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+      distance = parseFloat(urlParams.get("distance"));
+    }
 
-  if (distance) {
-    fetchData();
-  } else {
-    center = new kakao.maps.LatLng(latitude, longitude);
-    addMarker(center);
-    map.setCenter(center);
+    if (distance) {
+      await fetchData();
+    } else {
+      center = new kakao.maps.LatLng(latitude, longitude);
+      addMarker(center);
+      map.setCenter(center);
+    }
+  } catch (e) {
+    console.log(e);
+    dataToSend = JSON.stringify({
+      err: e,
+    });
+    window.ReactNativeWebView.postMessage(dataToSend);
   }
-} catch (e) {
-  console.log(e);
-  dataToSend = JSON.stringify({
-    err: e,
-  });
-  window.ReactNativeWebView.postMessage(dataToSend);
-}
+})();
 
 // helper functions
+function getCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+}
+
 function addMarker(position) {
   const marker = new kakao.maps.Marker({
     position: position,
