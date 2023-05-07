@@ -28,7 +28,9 @@ try {
         window.ReactNativeWebView.postMessage(dataToSend);
       }
     );
+    distance = parseFloat(urlParams.get("distance"));
   }
+
   if (distance) {
     fetchData();
   } else {
@@ -44,6 +46,7 @@ try {
   window.ReactNativeWebView.postMessage(dataToSend);
 }
 
+// helper functions
 function addMarker(position) {
   const marker = new kakao.maps.Marker({
     position: position,
