@@ -31,10 +31,12 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     }
   } catch (e) {
     console.log(e);
-    dataToSend = JSON.stringify({
-      err: e,
-    });
-    window.ReactNativeWebView.postMessage(dataToSend);
+    if (window.ReactNativeWebView) {
+      dataToSend = JSON.stringify({
+        err: e,
+      });
+      window.ReactNativeWebView.postMessage(dataToSend);
+    }
   }
 })();
 
@@ -64,6 +66,7 @@ async function fetchData() {
   const roads = geojson.features.filter(
     (feature) => feature.geometry.type === "LineString"
   );
+  console.log(roads);
 
   //   const allRoadSets = [];
 
@@ -118,11 +121,6 @@ async function fetchData() {
 
   //   const bestFiveRoadSets = allRoadSets.slice(0, 5);
 
-  dataToSend = JSON.stringify({
-    distance: distance,
-    // bestFiveRoadSets: bestFiveRoadSets,
-  });
-
   center = new kakao.maps.LatLng(
     (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
     (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
@@ -130,7 +128,14 @@ async function fetchData() {
   addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
   map.setCenter(center);
 
-  window.ReactNativeWebView.postMessage(dataToSend);
+  if (window.ReactNativeWebView) {
+    dataToSend = JSON.stringify({
+      distance: distance,
+      // bestFiveRoadSets: bestFiveRoadSets,
+      err: roads,
+    });
+    window.ReactNativeWebView.postMessage(dataToSend);
+  }
 }
 
 function euclideanDistanceInKm(point1, point2) {
