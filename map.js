@@ -69,62 +69,62 @@ async function fetchData() {
     (feature) => feature.geometry.type === "LineString"
   );
 
-  const allRoadSets = [];
+  //   const allRoadSets = [];
 
-  for (let i = 0; i < 20; i++) {
-    const randomIndices = new Set();
+  //   for (let i = 0; i < 20; i++) {
+  //     const randomIndices = new Set();
 
-    while (randomIndices.size < Math.min(2, roads.length)) {
-      const randomIndex = Math.floor(Math.random() * roads.length);
-      randomIndices.add(randomIndex);
-    }
+  //     while (randomIndices.size < Math.min(2, roads.length)) {
+  //       const randomIndex = Math.floor(Math.random() * roads.length);
+  //       randomIndices.add(randomIndex);
+  //     }
 
-    const randomRoads = Array.from(randomIndices).map((index) => roads[index]);
-    const roadCoords = randomRoads.map((road) => {
-      const coordinates = road.geometry.coordinates;
-      const middleCoordinate = coordinates[Math.floor(coordinates.length / 2)];
+  //     const randomRoads = Array.from(randomIndices).map((index) => roads[index]);
+  //     const roadCoords = randomRoads.map((road) => {
+  //       const coordinates = road.geometry.coordinates;
+  //       const middleCoordinate = coordinates[Math.floor(coordinates.length / 2)];
 
-      return {
-        latitude: middleCoordinate[1],
-        longitude: middleCoordinate[0],
-      };
-    });
+  //       return {
+  //         latitude: middleCoordinate[1],
+  //         longitude: middleCoordinate[0],
+  //       };
+  //     });
 
-    const origin = {
-      latitude: latitude,
-      longitude: longitude,
-    };
+  //     const origin = {
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //     };
 
-    const minDistance = distance * 0.1;
+  //     const minDistance = distance * 0.1;
 
-    if (
-      euclideanDistanceInKm(origin, roadCoords[1]) >= minDistance &&
-      euclideanDistanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
-      euclideanDistanceInKm(roadCoords[1], origin) >= minDistance
-    ) {
-      const euclideanDistance = totalEuclideanDistanceInKm(origin, roadCoords);
+  //     if (
+  //       euclideanDistanceInKm(origin, roadCoords[1]) >= minDistance &&
+  //       euclideanDistanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
+  //       euclideanDistanceInKm(roadCoords[1], origin) >= minDistance
+  //     ) {
+  //       const euclideanDistance = totalEuclideanDistanceInKm(origin, roadCoords);
 
-      allRoadSets.push({
-        roadCoords,
-        euclideanDistance: euclideanDistance,
-      });
-    } else {
-      // If the roads don't meet the criteria, decrement i to retry with another pair
-      i--;
-    }
-  }
+  //       allRoadSets.push({
+  //         roadCoords,
+  //         euclideanDistance: euclideanDistance,
+  //       });
+  //     } else {
+  //       // If the roads don't meet the criteria, decrement i to retry with another pair
+  //       i--;
+  //     }
+  //   }
 
-  allRoadSets.sort(
-    (a, b) =>
-      Math.abs(distance * 0.7 - a.euclideanDistance) -
-      Math.abs(distance * 0.7 - b.euclideanDistance)
-  );
+  //   allRoadSets.sort(
+  //     (a, b) =>
+  //       Math.abs(distance * 0.7 - a.euclideanDistance) -
+  //       Math.abs(distance * 0.7 - b.euclideanDistance)
+  //   );
 
-  const bestFiveRoadSets = allRoadSets.slice(0, 5);
+  //   const bestFiveRoadSets = allRoadSets.slice(0, 5);
 
   dataToSend = JSON.stringify({
     distance: distance,
-    bestFiveRoadSets: bestFiveRoadSets,
+    // bestFiveRoadSets: bestFiveRoadSets,
   });
 
   center = new kakao.maps.LatLng(
