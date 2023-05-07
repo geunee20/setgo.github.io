@@ -1,7 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 var center = new kakao.maps.LatLng(33.450701, 126.570667);
-var latitude, longitude;
-var distance;
+var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
   center: center,
@@ -16,7 +15,13 @@ try {
     longitude = urlParams.get("lon");
     distance = parseFloat(urlParams.get("distance"));
 
-    fetchData();
+    if (distance) {
+      fetchData();
+    } else {
+      center = new kakao.maps.LatLng(latitude, longitude);
+      addMarker(center);
+      map.setCenter(center);
+    }
   } else {
     showUserLocation();
   }
@@ -86,8 +91,8 @@ async function fetchData() {
     });
 
     const origin = {
-      latitude: currentLocation.latitude,
-      longitude: currentLocation.longitude,
+      latitude: latitude,
+      longitude: longitude,
     };
 
     const minDistance = distance * 0.1;
@@ -116,14 +121,19 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
-  center = new kakao.maps.LatLng(latitude, longitude);
-  addMarker(center);
-  map.setCenter(center);
 
-  const dataToSend = JSON.stringify({
+  dataToSend = JSON.stringify({
     distance: distance,
     bestFiveRoadSets: bestFiveRoadSets,
   });
+
+  center = new kakao.maps.LatLng(
+    (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
+    (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
+  );
+  addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
+  map.setCenter(center);
+
   window.ReactNativeWebView.postMessage(dataToSend);
 }
 
