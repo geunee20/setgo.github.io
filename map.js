@@ -8,25 +8,37 @@ const mapOptions = {
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
 
-if (window.ReactNativeWebView) {
-  center = new kakao.maps.LatLng(
-    parseFloat(urlParams.get("lat")),
-    parseFloat(urlParams.get("lng"))
-  );
-  addMarker(center);
-  map.setCenter(center);
-} else {
-  showUserLocation();
+try {
+  if (window.ReactNativeWebView) {
+    center = new kakao.maps.LatLng(
+      parseFloat(urlParams.get("lat")),
+      parseFloat(urlParams.get("lng"))
+    );
+    addMarker(center);
+    map.setCenter(center);
+  } else {
+    showUserLocation();
+  }
+} catch (e) {
+  console.log(e);
 }
 
-console.log(center);
-
 function addMarker(position) {
+  var imageSrc = "./start-location-icon.png",
+    imageSize = new kakao.maps.Size(64, 69),
+    imageOption = { offset: new kakao.maps.Point(27, 69) };
+
+  var markerImage = new kakao.maps.MarkerImage(
+    imageSrc,
+    imageSize,
+    imageOption
+  );
+
   const marker = new kakao.maps.Marker({
-    map: map,
     position: position,
-    title: `${position}`,
+    image: markerImage,
   });
+  marker.setMap(map);
 }
 
 function showUserLocation() {
