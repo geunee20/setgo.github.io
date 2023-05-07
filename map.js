@@ -15,8 +15,8 @@ try {
       parseFloat(urlParams.get("lat")),
       parseFloat(urlParams.get("lng"))
     );
-    distance = parseFloat(urlParams.get("diatance"));
-    window.ReactNativeWebView.postMessage(`Distance: ${distance}`);
+    distance = parseFloat(urlParams.get("distance"));
+    window.ReactNativeWebView.postMessage("Distance: " + distance);
     addMarker(center);
     map.setCenter(center);
   } else {
