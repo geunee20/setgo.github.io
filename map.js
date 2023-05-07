@@ -24,19 +24,8 @@ try {
 }
 
 function addMarker(position) {
-  var imageSrc = "./start-location-icon.png",
-    imageSize = new kakao.maps.Size(64, 69),
-    imageOption = { offset: new kakao.maps.Point(27, 69) };
-
-  var markerImage = new kakao.maps.MarkerImage(
-    imageSrc,
-    imageSize,
-    imageOption
-  );
-
   const marker = new kakao.maps.Marker({
     position: position,
-    image: markerImage,
   });
   marker.setMap(map);
 }
@@ -45,12 +34,12 @@ function showUserLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const userLatLng = new kakao.maps.LatLng(
+        center = new kakao.maps.LatLng(
           position.coords.latitude,
           position.coords.longitude
         );
-        map.setCenter(userLatLng);
-        addMarker(userLatLng);
+        map.setCenter(center);
+        addMarker(center);
       },
       (error) => {
         console.error("Error getting user location:", error);
