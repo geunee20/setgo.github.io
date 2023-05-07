@@ -14,16 +14,27 @@ try {
     latitude = urlParams.get("lat");
     longitude = urlParams.get("lon");
     distance = parseFloat(urlParams.get("distance"));
-
-    if (distance) {
-      fetchData();
-    } else {
-      center = new kakao.maps.LatLng(latitude, longitude);
-      addMarker(center);
-      map.setCenter(center);
-    }
+  } else if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+      },
+      (error) => {
+        console.error("Error getting user location:", error);
+        dataToSend = JSON.stringify({
+          err: error,
+        });
+        window.ReactNativeWebView.postMessage(dataToSend);
+      }
+    );
+  }
+  if (distance) {
+    fetchData();
   } else {
-    showUserLocation();
+    center = new kakao.maps.LatLng(latitude, longitude);
+    addMarker(center);
+    map.setCenter(center);
   }
 } catch (e) {
   console.log(e);
@@ -38,34 +49,6 @@ function addMarker(position) {
     position: position,
   });
   marker.setMap(map);
-}
-
-function showUserLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        center = new kakao.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-        map.setCenter(center);
-        addMarker(center);
-      },
-      (error) => {
-        console.error("Error getting user location:", error);
-        dataToSend = JSON.stringify({
-          err: error,
-        });
-        window.ReactNativeWebView.postMessage(dataToSend);
-      }
-    );
-  } else {
-    console.error("Geolocation is not supported by this browser.");
-    dataToSend = JSON.stringify({
-      err: error,
-    });
-    window.ReactNativeWebView.postMessage(dataToSend);
-  }
 }
 
 async function fetchData() {
