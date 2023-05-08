@@ -66,10 +66,8 @@ async function fetchData() {
   const roads = geojson.features.filter(
     (feature) => feature.geometry.type === "LineString"
   );
-  console.log(roads);
 
   const allRoadSets = [];
-
   for (let i = 0; i < 20; i++) {
     const randomIndices = new Set();
 
@@ -119,13 +117,27 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
+  console.log(bestFiveRoadSets);
 
-  center = new kakao.maps.LatLng(
-    (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
-    (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
-  );
-  addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
-  map.setCenter(center);
+  // if (window.ReactNativeWebView) {
+  //   fetchDirections(
+  //     { latitude: latitude, longitude: longitude },
+  //     bestFiveRoadSets
+  //   );
+  // } else {
+  //   Geolocation.getCurrentPosition(
+  //     (position) => fetchDirections(position, bestFiveRoadSets),
+  //     (error) => console.log(error),
+  //     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+  //   );
+  // }
+
+  // center = new kakao.maps.LatLng(
+  //   (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
+  //   (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
+  // );
+  // addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
+  // map.setCenter(center);
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
