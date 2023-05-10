@@ -119,7 +119,7 @@ async function fetchData() {
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
   console.log(bestFiveRoadSets);
 
-  const bestFiveRoutes = getPedestrianRoute(
+  const bestFiveRoutes = fetchAllRoutes(
     origin,
     bestFiveRoadSets[0].roadCoords,
     origin
@@ -139,11 +139,13 @@ async function fetchData() {
   //   );
   // }
 
-  // center = new kakao.maps.LatLng(
-  //   (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
-  //   (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
-  // );
-  // addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
+  const bestRoute = bestFiveRoutes;
+
+  center = new kakao.maps.LatLng(
+    (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
+    (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
+  );
+  addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
@@ -175,16 +177,30 @@ function totalEuclideanDistanceInKm(origin, markers) {
   );
 }
 
+async function fetchAllRoutes(origin, waypointsSets, destination) {
+  const fetchRoutePromises = waypointsSets.map((waypointSet) =>
+    getPedestrianRoute(origin, waypointSet.roadCoords, destination)
+  );
+
+  try {
+    const allRoutesData = await Promise.all(fetchRoutePromises);
+    console.log(allRoutesData);
+    return allRoutesData;
+  } catch (error) {
+    console.error("Error fetching pedestrian routes:", error);
+  }
+}
+
 async function getPedestrianRoute(origin, waypoints, destination) {
   const url = `https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&appKey=RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7`;
 
   const requestData = {
     startName: "Start",
-    startX: startPoint.lon,
-    startY: startPoint.lat,
+    startX: origin.lon,
+    startY: origin.lat,
     endName: "End",
-    endX: endPoint.lon,
-    endY: endPoint.lat,
+    endX: destination.lon,
+    endY: destination.lat,
     passList: waypoints
       .map((point, index) => `${index + 1},${point.lon},${point.lat}`)
       .join("_"),
