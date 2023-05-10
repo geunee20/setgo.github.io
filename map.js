@@ -196,13 +196,15 @@ async function getPedestrianRoute(origin, waypoints, destination) {
 
   const requestData = {
     startName: "Start",
-    startX: origin.lon,
-    startY: origin.lat,
+    startX: origin.longitude,
+    startY: origin.latitude,
     endName: "End",
-    endX: destination.lon,
-    endY: destination.lat,
+    endX: destination.longitude,
+    endY: destination.latitude,
     passList: waypoints
-      .map((point, index) => `${index + 1},${point.lon},${point.lat}`)
+      .map(
+        (point, index) => `${index + 1},${point.longitude},${point.latitude}`
+      )
       .join("_"),
   };
 
