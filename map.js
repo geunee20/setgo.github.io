@@ -192,29 +192,32 @@ async function fetchAllRoutes(origin, waypointsSets, destination) {
 }
 
 async function getPedestrianRoute(origin, waypoints, destination) {
-  const url = `https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&appKey=RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7`;
-
-  const requestData = {
-    startName: "Start",
-    startX: origin.longitude,
-    startY: origin.latitude,
-    endName: "End",
-    endX: destination.longitude,
-    endY: destination.latitude,
-    passList: waypoints
-      .map(
-        (point, index) => `${index + 1},${point.longitude},${point.latitude}`
-      )
-      .join("_"),
-  };
+  const url =
+    "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function";
 
   try {
     const response = await fetch(url, {
       method: "POST",
+      method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        accept: "application/json",
+        "content-type": "application/json",
+        appKey: "RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7",
       },
-      body: JSON.stringify(requestData),
+      body: JSON.stringify({
+        startName: "Start",
+        startX: origin.longitude,
+        startY: origin.latitude,
+        endName: "End",
+        endX: destination.longitude,
+        endY: destination.latitude,
+        passList: waypoints
+          .map(
+            (point, index) =>
+              `${index + 1},${point.longitude},${point.latitude}`
+          )
+          .join("_"),
+      }),
     });
 
     const routeData = await response.json();
