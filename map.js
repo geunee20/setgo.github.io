@@ -119,11 +119,7 @@ async function fetchData() {
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
   console.log(bestFiveRoadSets);
 
-  const bestFiveRoutes = fetchAllRoutes(
-    origin,
-    bestFiveRoadSets[0].roadCoords,
-    origin
-  );
+  const bestFiveRoutes = fetchAllRoutes(origin, bestFiveRoadSets, origin);
   console.log(bestFiveRoutes);
 
   // if (window.ReactNativeWebView) {
@@ -142,8 +138,14 @@ async function fetchData() {
   const bestRoute = bestFiveRoutes;
 
   center = new kakao.maps.LatLng(
-    (latitude + roadCoords[0].latitude + roadCoords[1].latitude) / 3,
-    (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
+    (latitude +
+      bestFiveRoadSets.roadCoords[0].latitude +
+      bestFiveRoadSets.roadCoords[1].latitude) /
+      3,
+    (longitude +
+      bestFiveRoadSets.roadCoords[0].longitude +
+      bestFiveRoadSets.roadCoords[1].longitude) /
+      3
   );
   addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
 
