@@ -27,8 +27,8 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     } else {
       center = new kakao.maps.LatLng(latitude, longitude);
       addMarker(center);
-      map.setCenter(center);
     }
+    map.setCenter(center);
   } catch (e) {
     console.log(e);
     if (window.ReactNativeWebView) {
@@ -119,6 +119,13 @@ async function fetchData() {
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
   console.log(bestFiveRoadSets);
 
+  const bestFiveRoutes = getPedestrianRoute(
+    origin,
+    bestFiveRoadSets[0].roadCoords,
+    origin
+  );
+  console.log(bestFiveRoutes);
+
   // if (window.ReactNativeWebView) {
   //   fetchDirections(
   //     { latitude: latitude, longitude: longitude },
@@ -137,7 +144,6 @@ async function fetchData() {
   //   (longitude + roadCoords[0].longitude + roadCoords[1].longitude) / 3
   // );
   // addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
-  // map.setCenter(center);
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
@@ -167,4 +173,35 @@ function totalEuclideanDistanceInKm(origin, markers) {
     euclideanDistanceInKm(marker1, marker2) +
     euclideanDistanceInKm(marker2, origin)
   );
+}
+
+async function getPedestrianRoute(origin, waypoints, destination) {
+  const url = `https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&appKey=RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7`;
+
+  const requestData = {
+    startName: "Start",
+    startX: startPoint.lon,
+    startY: startPoint.lat,
+    endName: "End",
+    endX: endPoint.lon,
+    endY: endPoint.lat,
+    passList: waypoints
+      .map((point, index) => `${index + 1},${point.lon},${point.lat}`)
+      .join("_"),
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    const routeData = await response.json();
+    console.log(routeData);
+  } catch (error) {
+    console.error("Error fetching pedestrian route:", error);
+  }
 }
