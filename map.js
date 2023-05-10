@@ -180,8 +180,9 @@ function totalEuclideanDistanceInKm(origin, markers) {
 }
 
 async function fetchAllRoutes(origin, waypointsSets, destination) {
-  const fetchRoutePromises = waypointsSets.map((waypointSet) =>
-    getPedestrianRoute(origin, waypointSet.roadCoords, destination)
+  const fetchRoutePromises = waypointsSets.map(
+    async (waypointSet) =>
+      await getPedestrianRoute(origin, waypointSet.roadCoords, destination)
   );
 
   try {
@@ -221,6 +222,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
 
     const routeData = await response.json();
     console.log(routeData);
+    return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
   }
