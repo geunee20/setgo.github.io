@@ -117,6 +117,7 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
+  console.log(bestFiveRoadSets);
   const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
   console.log(bestFiveRoutes);
 
@@ -184,7 +185,6 @@ async function fetchAllRoutes(origin, waypointsSets, destination) {
 
   try {
     const allRoutesData = await Promise.all(fetchRoutePromises);
-    console.log(allRoutesData);
     return allRoutesData;
   } catch (error) {
     console.error("Error fetching pedestrian routes:", error);
@@ -192,33 +192,33 @@ async function fetchAllRoutes(origin, waypointsSets, destination) {
 }
 
 async function getPedestrianRoute(origin, waypoints, destination) {
-  const url =
-    "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function";
-
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        appKey: "RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7",
-      },
-      body: JSON.stringify({
-        startName: "Start",
-        startX: origin.longitude,
-        startY: origin.latitude,
-        endName: "End",
-        endX: destination.longitude,
-        endY: destination.latitude,
-        passList: waypoints
-          .map(
-            (point, index) =>
-              `${index + 1},${point.longitude},${point.latitude}`
-          )
-          .join("_"),
-      }),
-    });
+    const response = await fetch(
+      "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          appKey: "RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7",
+        },
+        body: JSON.stringify({
+          startName: "Start",
+          startX: origin.longitude,
+          startY: origin.latitude,
+          endName: "End",
+          endX: destination.longitude,
+          endY: destination.latitude,
+          passList: waypoints
+            .map(
+              (point, index) =>
+                `${index + 1},${point.longitude},${point.latitude}`
+            )
+            .join("_"),
+          searchOption: "30",
+        }),
+      }
+    );
 
     const routeData = await response.json();
     console.log(routeData);
