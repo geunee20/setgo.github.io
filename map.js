@@ -1,9 +1,9 @@
 const urlParams = new URLSearchParams(window.location.search);
-var center = new kakao.maps.LatLng(33.450701, 126.570667);
+var origin = new kakao.maps.LatLng(33.450701, 126.570667);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
-  center: center,
+  center: origin,
   level: 3,
 };
 
@@ -25,10 +25,10 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     if (distance) {
       await fetchData();
     } else {
-      center = new kakao.maps.LatLng(latitude, longitude);
-      addMarker(center);
+      origin = new kakao.maps.LatLng(latitude, longitude);
+      addMarker(origin);
+      map.setCenter(origin);
     }
-    map.setCenter(center);
   } catch (e) {
     console.log(e);
     if (window.ReactNativeWebView) {
@@ -87,7 +87,7 @@ async function fetchData() {
       };
     });
 
-    const origin = {
+    origin = {
       latitude: latitude,
       longitude: longitude,
     };
@@ -117,9 +117,7 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
-  console.log(bestFiveRoadSets);
-
-  const bestFiveRoutes = fetchAllRoutes(origin, bestFiveRoadSets, origin);
+  const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
   console.log(bestFiveRoutes);
 
   // if (window.ReactNativeWebView) {
@@ -135,19 +133,18 @@ async function fetchData() {
   //   );
   // }
 
-  const bestRoute = bestFiveRoutes;
+  // const bestRoute = bestFiveRoutes;
 
-  center = new kakao.maps.LatLng(
-    (latitude +
-      bestFiveRoadSets.roadCoords[0].latitude +
-      bestFiveRoadSets.roadCoords[1].latitude) /
-      3,
-    (longitude +
-      bestFiveRoadSets.roadCoords[0].longitude +
-      bestFiveRoadSets.roadCoords[1].longitude) /
-      3
-  );
-  addMarker(new kakao.maps.LatLng(origin.latitude, origin.longitude));
+  // center = new kakao.maps.LatLng(
+  //   (latitude +
+  //     bestFiveRoadSets.roadCoords[0].latitude +
+  //     bestFiveRoadSets.roadCoords[1].latitude) /
+  //     3,
+  //   (longitude +
+  //     bestFiveRoadSets.roadCoords[0].longitude +
+  //     bestFiveRoadSets.roadCoords[1].longitude) /
+  //     3
+  // );
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
