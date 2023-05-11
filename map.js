@@ -204,7 +204,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
         headers: {
           accept: "application/json",
           "content-type": "application/json",
-          appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
+          appKey: "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5",
         },
         body: JSON.stringify({
           startName: "%EC%B6%9C%EB%B0%9C%0A",
