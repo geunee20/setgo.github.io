@@ -247,14 +247,16 @@ function findClosestRoute(routes, desiredDistance) {
   return closestRoute;
 }
 
-function drawRouteOnKakaoMap(map, jsonData) {
-  const coordinates = jsonData.features
+function drawRouteOnKakaoMap(map, route) {
+  const coordinates = route.features
     .filter((feature) => feature.geometry.type === "LineString")
     .map((feature) => feature.geometry.coordinates)
     .flat();
+
   const path = coordinates.map(
     (coord) => new kakao.maps.LatLng(coord[1], coord[0])
   );
+
   const polyline = new kakao.maps.Polyline({
     map: map,
     path: path,
@@ -262,32 +264,63 @@ function drawRouteOnKakaoMap(map, jsonData) {
     strokeColor: "#ff0000",
     strokeOpacity: 0.7,
   });
+
   const bounds = new kakao.maps.LatLngBounds();
   path.forEach((point) => bounds.extend(point));
   map.setBounds(bounds);
+
   let cumulativeDistance = 0;
   let prevPoint = null;
   let markerCounter = 1;
+
   path.forEach((point) => {
     if (prevPoint) {
-      const distance = kakao.maps.geometry.computeDistance(prevPoint, point);
-      cumulativeDistance += distance / 1000;
+      const distance = calculateDistance(
+        prevPoint.getLat(),
+        prevPoint.getLng(),
+        point.getLat(),
+        point.getLng()
+      );
+      cumulativeDistance += distance;
+
       if (cumulativeDistance >= 1) {
         new kakao.maps.Marker({
           position: point,
           map: map,
         });
+
         var label =
           '<div class="label"><span>' + markerCounter + "</span></div>";
+
         var overlay = new kakao.maps.CustomOverlay({
           position: point,
           content: label,
           map: map,
         });
+
         markerCounter++;
         cumulativeDistance = 0;
       }
     }
     prevPoint = point;
   });
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  var R = 6371;
+  var dLat = deg2rad(lat2 - lat1);
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
 }
