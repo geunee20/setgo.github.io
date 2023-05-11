@@ -118,8 +118,8 @@ async function fetchData() {
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
   console.log(bestFiveRoadSets);
-  const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
-  console.log(bestFiveRoutes);
+  // const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
+  // console.log(bestFiveRoutes);
 
   // if (window.ReactNativeWebView) {
   //   fetchDirections(
@@ -245,14 +245,17 @@ async function getPedestrianRoute(origin, waypoints, destination) {
       }),
     };
 
-    const response = fetch(
+    fetch(
       "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
       options
-    );
+    )
+      .then((response) => response.json())
+      .then((response) => console.log(response))
+      .catch((err) => console.error(err));
 
-    const routeData = await response.json();
-    console.log(routeData);
-    return routeData;
+    // const routeData = await response.json();
+    // console.log(routeData);
+    // return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
   }
