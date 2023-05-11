@@ -217,9 +217,9 @@ async function getPedestrianRoute(origin, waypoints, destination) {
       }
     );
 
-    // const routeData = await response.json();
-    // console.log(routeData);
-    // return routeData;
+    const routeData = await response.json();
+    console.log(routeData);
+    return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
   }
