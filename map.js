@@ -118,8 +118,12 @@ async function fetchData() {
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
   console.log(bestFiveRoadSets);
-  // const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
-  // console.log(bestFiveRoutes);
+  const bestFiveRoutes = await fetchAllRoutes(
+    origin,
+    [bestFiveRoadSets[0]],
+    origin
+  );
+  console.log(bestFiveRoutes);
 
   // if (window.ReactNativeWebView) {
   //   fetchDirections(
