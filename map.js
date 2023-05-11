@@ -5,6 +5,7 @@ const mapContainer = document.getElementById("map");
 const mapOptions = {
   center: origin,
   level: 3,
+  draggable: true,
 };
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
@@ -22,12 +23,16 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       distance = parseFloat(urlParams.get("distance"));
     }
     origin = new kakao.maps.LatLng(latitude, longitude);
+    const marker = new kakao.maps.Marker({
+      map: map,
+      position: origin,
+    });
+
     if (distance) {
       await fetchData();
     } else {
       map.setCenter(origin);
     }
-    addMarker(origin);
   } catch (e) {
     console.log(e);
     if (window.ReactNativeWebView) {
@@ -44,13 +49,6 @@ function getCurrentPosition() {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject);
   });
-}
-
-function addMarker(position) {
-  const marker = new kakao.maps.Marker({
-    position: position,
-  });
-  marker.setMap(map);
 }
 
 async function fetchData() {
