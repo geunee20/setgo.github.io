@@ -222,7 +222,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
     );
 
     const routeData = await response.json();
-    console.log(routeData);
+    console.log(routeData.totalDistance);
     return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
