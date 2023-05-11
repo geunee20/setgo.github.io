@@ -26,9 +26,9 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       await fetchData();
     } else {
       origin = new kakao.maps.LatLng(latitude, longitude);
-      addMarker(origin);
       map.setCenter(origin);
     }
+    addMarker(origin);
   } catch (e) {
     console.log(e);
     if (window.ReactNativeWebView) {
@@ -252,11 +252,9 @@ function drawRouteOnKakaoMap(map, jsonData) {
     .filter((feature) => feature.geometry.type === "LineString")
     .map((feature) => feature.geometry.coordinates)
     .flat();
-
   const path = coordinates.map(
     (coord) => new kakao.maps.LatLng(coord[1], coord[0])
   );
-
   const polyline = new kakao.maps.Polyline({
     map: map,
     path: path,
@@ -264,8 +262,32 @@ function drawRouteOnKakaoMap(map, jsonData) {
     strokeColor: "#ff0000",
     strokeOpacity: 0.7,
   });
-
   const bounds = new kakao.maps.LatLngBounds();
   path.forEach((point) => bounds.extend(point));
   map.setBounds(bounds);
+  let cumulativeDistance = 0;
+  let prevPoint = null;
+  let markerCounter = 1;
+  path.forEach((point) => {
+    if (prevPoint) {
+      const distance = kakao.maps.geometry.computeDistance(prevPoint, point);
+      cumulativeDistance += distance / 1000;
+      if (cumulativeDistance >= 1) {
+        new kakao.maps.Marker({
+          position: point,
+          map: map,
+        });
+        var label =
+          '<div class="label"><span>' + markerCounter + "</span></div>";
+        var overlay = new kakao.maps.CustomOverlay({
+          position: point,
+          content: label,
+          map: map,
+        });
+        markerCounter++;
+        cumulativeDistance = 0;
+      }
+    }
+    prevPoint = point;
+  });
 }
