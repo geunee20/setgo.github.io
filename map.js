@@ -117,10 +117,12 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
-  const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
+  const bestFiveRoutes = await fetchAllRoutes(
+    origin,
+    [bestFiveRoadSets[0]], //need to change this later
+    origin
+  );
   const bestRoute = findClosestRoute(bestFiveRoutes, distance);
-  console.log(bestFiveRoutes);
-
   drawRouteOnKakaoMap(map, bestRoute);
 
   // if (window.ReactNativeWebView) {
@@ -202,7 +204,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
         headers: {
           accept: "application/json",
           "content-type": "application/json",
-          appKey: "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5",
+          appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
         },
         body: JSON.stringify({
           startName: "%EC%B6%9C%EB%B0%9C",
@@ -243,4 +245,27 @@ function findClosestRoute(routes, desiredDistance) {
   }
 
   return closestRoute;
+}
+
+function drawRouteOnKakaoMap(map, jsonData) {
+  const coordinates = jsonData.features
+    .filter((feature) => feature.geometry.type === "LineString")
+    .map((feature) => feature.geometry.coordinates)
+    .flat();
+
+  const path = coordinates.map(
+    (coord) => new kakao.maps.LatLng(coord[1], coord[0])
+  );
+
+  const polyline = new kakao.maps.Polyline({
+    map: map,
+    path: path,
+    strokeWeight: 4,
+    strokeColor: "#ff0000",
+    strokeOpacity: 0.7,
+  });
+
+  const bounds = new kakao.maps.LatLngBounds();
+  path.forEach((point) => bounds.extend(point));
+  map.setBounds(bounds);
 }
