@@ -117,13 +117,11 @@ async function fetchData() {
   );
 
   const bestFiveRoadSets = allRoadSets.slice(0, 5);
-  console.log(bestFiveRoadSets);
-  const bestFiveRoutes = await fetchAllRoutes(
-    origin,
-    [bestFiveRoadSets[0]],
-    origin
-  );
+  const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
+  const bestRoute = findClosestRoute(bestFiveRoutes, distance);
   console.log(bestFiveRoutes);
+
+  drawRouteOnKakaoMap(map, bestRoute);
 
   // if (window.ReactNativeWebView) {
   //   fetchDirections(
@@ -207,7 +205,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
           appKey: "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5",
         },
         body: JSON.stringify({
-          startName: "%EC%B6%9C%EB%B0%9C%0A",
+          startName: "%EC%B6%9C%EB%B0%9C",
           startX: origin.longitude,
           startY: origin.latitude,
           endName: "%EB%8F%84%EC%B0%A9%0A",
@@ -227,4 +225,22 @@ async function getPedestrianRoute(origin, waypoints, destination) {
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
   }
+}
+
+function findClosestRoute(routes, desiredDistance) {
+  let closestRoute = null;
+  let smallestDifference = Infinity;
+
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
+    const totalDistance = route.features[0].properties.totalDistance;
+    const difference = Math.abs(totalDistance - desiredDistance);
+
+    if (difference < smallestDifference) {
+      smallestDifference = difference;
+      closestRoute = route;
+    }
+  }
+
+  return closestRoute;
 }
