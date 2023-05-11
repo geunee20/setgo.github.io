@@ -21,11 +21,10 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       longitude = position.coords.longitude;
       distance = parseFloat(urlParams.get("distance"));
     }
-
+    origin = new kakao.maps.LatLng(latitude, longitude);
     if (distance) {
       await fetchData();
     } else {
-      origin = new kakao.maps.LatLng(latitude, longitude);
       map.setCenter(origin);
     }
     addMarker(origin);
@@ -222,7 +221,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
     );
 
     const routeData = await response.json();
-    console.log(routeData.totalDistance);
+    console.log(routeData.features[0].properties.totalDistance);
     return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
