@@ -193,65 +193,29 @@ async function fetchAllRoutes(origin, waypointsSets, destination) {
 
 async function getPedestrianRoute(origin, waypoints, destination) {
   try {
-    // const response = await fetch(
-    //   "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       accept: "application/json",
-    //       "content-type": "application/json",
-    //       appKey: "RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7",
-    //     },
-    //     body: JSON.stringify({
-    //       startName: "Start",
-    //       startX: origin.longitude,
-    //       startY: origin.latitude,
-    //       endName: "End",
-    //       endX: destination.longitude,
-    //       endY: destination.latitude,
-    //       passList: waypoints
-    //         .map(
-    //           (point, index) =>
-    //             `${index + 1},${point.longitude},${point.latitude}`
-    //         )
-    //         .join("_"),
-    //       searchOption: "30",
-    //     }),
-    //   }
-    // );
-
-    const options = {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        appKey: "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5",
-      },
-      body: JSON.stringify({
-        startX: 126.92365493654832,
-        startY: 37.556770374096615,
-        angle: 20,
-        speed: 30,
-        endPoiId: "10001",
-        endX: 126.92432158129688,
-        endY: 37.55279861528311,
-        passList: "126.92774822,37.55395475_126.92577620,37.55337145",
-        reqCoordType: "WGS84GEO",
-        startName: "%EC%B6%9C%EB%B0%9C",
-        endName: "%EB%8F%84%EC%B0%A9",
-        searchOption: "0",
-        resCoordType: "WGS84GEO",
-        sort: "index",
-      }),
-    };
-
-    fetch(
+    const response = await fetch(
       "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
-      options
-    )
-      .then((response) => response.json())
-      .then((response) => console.log(response))
-      .catch((err) => console.error(err));
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          appKey: "RqfKTQZlDs6j7GCxi8FoZ7DkAIeyvalr4LjFfYZ7",
+        },
+        body: JSON.stringify({
+          startName: "%EC%B6%9C%EB%B0%9C%0A",
+          startX: origin.longitude,
+          startY: origin.latitude,
+          endName: "%EB%8F%84%EC%B0%A9%0A",
+          endX: destination.longitude,
+          endY: destination.latitude,
+          passList: waypoints
+            .map((point, index) => `${point.longitude},${point.latitude}`)
+            .join("_"),
+          speed: 8,
+        }),
+      }
+    );
 
     // const routeData = await response.json();
     // console.log(routeData);
