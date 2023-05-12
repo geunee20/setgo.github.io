@@ -100,11 +100,11 @@ async function getBestFiveRoadSets() {
     const minDistance = distance * 0.1;
 
     if (
-      distanceInKm(origin, roadCoords[1]) >= minDistance &&
-      distanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
-      distanceInKm(roadCoords[1], origin) >= minDistance
+      distanceInM(origin, roadCoords[1]) >= minDistance &&
+      distanceInM(roadCoords[0], roadCoords[1]) >= minDistance &&
+      distanceInM(roadCoords[1], origin) >= minDistance
     ) {
-      const euclideanDistance = totalDistanceInKm(origin, roadCoords);
+      const euclideanDistance = totalDistanceInM(origin, roadCoords);
 
       allRoadSets.push({
         roadCoords,
@@ -124,10 +124,10 @@ async function getBestFiveRoadSets() {
   return allRoadSets.slice(0, 5);
 }
 
-function distanceInKm(point1, point2) {
+function distanceInM(point1, point2) {
   const toRadians = (degrees) => (degrees * Math.PI) / 180;
 
-  const R = 6371;
+  const R = 6371000;
   const dLat = toRadians(point2.latitude - point1.latitude);
   const dLon = toRadians(point2.longitude - point1.longitude);
 
@@ -142,14 +142,14 @@ function distanceInKm(point1, point2) {
   return R * c;
 }
 
-function totalDistanceInKm(origin, markers) {
+function totalDistanceInM(origin, markers) {
   const marker1 = markers[0];
   const marker2 = markers[1];
 
   return (
-    distanceInKm(origin, marker1) +
-    distanceInKm(marker1, marker2) +
-    distanceInKm(marker2, origin)
+    distanceInM(origin, marker1) +
+    distanceInM(marker1, marker2) +
+    distanceInM(marker2, origin)
   );
 }
 
