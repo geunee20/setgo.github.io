@@ -17,13 +17,9 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       longitude = urlParams.get("lon");
       distance = parseFloat(urlParams.get("distance"));
     } else {
-      // const position = await getCurrentPosition();
-      // latitude = position.coords.latitude;
-      // longitude = position.coords.longitude;
-      // latitude = 37.574401;
-      // longitude = 126.976302;
-      latitude = 35.419494;
-      longitude = 127.865541;
+      const position = await getCurrentPosition();
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
       distance = parseFloat(urlParams.get("distance"));
     }
     origin_map = new kakao.maps.LatLng(latitude, longitude);
@@ -128,8 +124,16 @@ async function fetchData() {
   console.log(bestRoute.features[0].properties.totalDistance);
 
   if (window.ReactNativeWebView) {
+    // dataToSend = JSON.stringify({
+    //   bestRoute: bestRoute,
+    // });
     dataToSend = JSON.stringify({
-      bestRoute: bestRoute,
+      error: {
+        id: "429",
+        category: "gw",
+        code: "QUOTA_EXCEEDED",
+        message: "Limit Exceeded",
+      },
     });
     window.ReactNativeWebView.postMessage(dataToSend);
   }
