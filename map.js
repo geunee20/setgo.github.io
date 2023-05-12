@@ -1,9 +1,9 @@
 const urlParams = new URLSearchParams(window.location.search);
-var origin = new kakao.maps.LatLng(33.450701, 126.570667);
+var origin_map = new kakao.maps.LatLng(33.450701, 126.570667);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
-  center: origin,
+  center: origin_map,
   level: 3,
   draggable: true,
 };
@@ -16,6 +16,12 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       latitude = urlParams.get("lat");
       longitude = urlParams.get("lon");
       distance = parseFloat(urlParams.get("distance"));
+      dataToSend = JSON.stringify({
+        latitude: latitude,
+        longitude: longitude,
+        distance: distance,
+      });
+      window.ReactNativeWebView.postMessage(dataToSend);
     } else {
       // const position = await getCurrentPosition();
       // latitude = position.coords.latitude;
@@ -24,16 +30,16 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       longitude = 126.976302;
       distance = parseFloat(urlParams.get("distance"));
     }
-    origin = new kakao.maps.LatLng(latitude, longitude);
+    origin_map = new kakao.maps.LatLng(latitude, longitude);
     const marker = new kakao.maps.Marker({
       map: map,
-      position: origin,
+      position: origin_map,
     });
 
     if (distance) {
       await fetchData();
     } else {
-      map.setCenter(origin);
+      map.setCenter(origin_map);
     }
   } catch (e) {
     console.log(e);
@@ -267,42 +273,6 @@ function drawRouteOnKakaoMap(map, route) {
   const bounds = new kakao.maps.LatLngBounds();
   path.forEach((point) => bounds.extend(point));
   map.setBounds(bounds);
-
-  let cumulativeDistance = 0;
-  let prevPoint = null;
-  let markerCounter = 1;
-
-  path.forEach((point) => {
-    if (prevPoint) {
-      const distance = calculateDistance(
-        prevPoint.getLat(),
-        prevPoint.getLng(),
-        point.getLat(),
-        point.getLng()
-      );
-      cumulativeDistance += distance;
-
-      if (cumulativeDistance >= 1) {
-        new kakao.maps.Marker({
-          position: point,
-          map: map,
-        });
-
-        var label =
-          '<div class="label"><span>' + markerCounter + "</span></div>";
-
-        var overlay = new kakao.maps.CustomOverlay({
-          position: point,
-          content: label,
-          map: map,
-        });
-
-        markerCounter++;
-        cumulativeDistance = 0;
-      }
-    }
-    prevPoint = point;
-  });
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
