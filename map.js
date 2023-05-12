@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-var origin_map = new kakao.maps.LatLng(35.306065, 128.59633);
+var origin_map = new kakao.maps.LatLng(35.306069, 128.596367);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
@@ -9,7 +9,18 @@ const mapOptions = {
 };
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
-
+const ellipse = new kakao.maps.Ellipse({
+  map: map,
+  center: new kakao.maps.LatLng(35.306069, 128.596367),
+  rx: 50,
+  ry: 100,
+  strokeWeight: 2,
+  strokeColor: "#FF00FF",
+  strokeOpacity: 0.8,
+  strokeStyle: "dashed",
+  fillColor: "#00EEEE",
+  fillOpacity: 0.5,
+});
 (async () => {
   try {
     if (window.ReactNativeWebView) {
