@@ -156,32 +156,16 @@ function totalDistanceInM(origin, markers) {
 }
 
 function calculateAngle(origin, waypoint1, waypoint2) {
-  const bearingToWaypoint1 = calculateBearing(origin, waypoint1);
-  const bearingToWaypoint2 = calculateBearing(origin, waypoint2);
+  const distance1 = distanceInM(origin, waypoint1);
+  const distance2 = distanceInM(origin, waypoint2);
+  const distance3 = distanceInM(waypoint1, waypoint2);
 
-  let angleAtOrigin = bearingToWaypoint2 - bearingToWaypoint1;
-  if (angleAtOrigin < 0) {
-    angleAtOrigin += 360;
-  }
+  const angleAtOrigin = Math.acos(
+    (Math.pow(distance1, 2) + Math.pow(distance2, 2) - Math.pow(distance3, 2)) /
+      (2 * distance1 * distance2)
+  );
 
-  if (angleAtOrigin > 180) {
-    angleAtOrigin = 360 - angleAtOrigin;
-  }
-
-  return angleAtOrigin;
-}
-
-function calculateBearing(point1, point2) {
-  const lat1 = point1.latitude * (Math.PI / 180);
-  const lat2 = point2.latitude * (Math.PI / 180);
-  const longDiff = (point2.longitude - point1.longitude) * (Math.PI / 180);
-  const y = Math.sin(longDiff) * Math.cos(lat2);
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(longDiff);
-  const bearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
-
-  return bearing;
+  return angleAtOrigin * (180 / Math.PI);
 }
 
 async function getBestRoute(bestFiveRoadSets) {
