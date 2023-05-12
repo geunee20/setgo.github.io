@@ -16,12 +16,6 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       latitude = urlParams.get("lat");
       longitude = urlParams.get("lon");
       distance = parseFloat(urlParams.get("distance"));
-      dataToSend = JSON.stringify({
-        latitude: latitude,
-        longitude: longitude,
-        distance: distance,
-      });
-      window.ReactNativeWebView.postMessage(dataToSend);
     } else {
       // const position = await getCurrentPosition();
       // latitude = position.coords.latitude;
@@ -133,9 +127,7 @@ async function fetchData() {
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
-      expectedDistance: bestRoute.features[0].properties.totalDistance,
-      bestFiveRoadSets: bestFiveRoadSets,
-      err: roads,
+      bestRoute: bestRoute,
     });
     window.ReactNativeWebView.postMessage(dataToSend);
   }
