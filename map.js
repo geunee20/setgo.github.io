@@ -37,7 +37,7 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     console.log(e);
     if (window.ReactNativeWebView) {
       dataToSend = JSON.stringify({
-        err: e,
+        error: e,
       });
       window.ReactNativeWebView.postMessage(dataToSend);
     }
@@ -124,16 +124,8 @@ async function fetchData() {
   console.log(bestRoute.features[0].properties.totalDistance);
 
   if (window.ReactNativeWebView) {
-    // dataToSend = JSON.stringify({
-    //   bestRoute: bestRoute,
-    // });
     dataToSend = JSON.stringify({
-      error: {
-        id: "429",
-        category: "gw",
-        code: "QUOTA_EXCEEDED",
-        message: "Limit Exceeded",
-      },
+      bestRoute: bestRoute,
     });
     window.ReactNativeWebView.postMessage(dataToSend);
   }
