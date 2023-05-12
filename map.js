@@ -102,8 +102,7 @@ async function getBestFiveRoadSets() {
     if (
       distanceInKm(origin, roadCoords[1]) >= minDistance &&
       distanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
-      distanceInKm(roadCoords[1], origin) >= minDistance &&
-      calculateAngle(origin, roadCoords[0], roadCoords[1]) >= 45
+      distanceInKm(roadCoords[1], origin) >= minDistance
     ) {
       const euclideanDistance = totalDistanceInKm(origin, roadCoords);
 
@@ -152,35 +151,6 @@ function totalDistanceInKm(origin, markers) {
     distanceInKm(marker1, marker2) +
     distanceInKm(marker2, origin)
   );
-}
-
-function calculateAngle(origin, waypoint1, waypoint2) {
-  const bearingToWaypoint1 = calculateBearing(origin, waypoint1);
-  const bearingToWaypoint2 = calculateBearing(origin, waypoint2);
-
-  let angleAtOrigin = bearingToWaypoint2 - bearingToWaypoint1;
-  if (angleAtOrigin < 0) {
-    angleAtOrigin += 360;
-  }
-
-  if (angleAtOrigin > 180) {
-    angleAtOrigin = 360 - angleAtOrigin;
-  }
-
-  return angleAtOrigin;
-}
-
-function calculateBearing(point1, point2) {
-  const lat1 = point1.latitude * (Math.PI / 180);
-  const lat2 = point2.latitude * (Math.PI / 180);
-  const longDiff = (point2.longitude - point1.longitude) * (Math.PI / 180);
-  const y = Math.sin(longDiff) * Math.cos(lat2);
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(longDiff);
-  const bearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
-
-  return bearing;
 }
 
 async function getBestRoute(bestFiveRoadSets) {
