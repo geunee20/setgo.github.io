@@ -41,8 +41,8 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     } else {
       map.setCenter(origin_map);
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(`Error: ${error}`);
     if (window.ReactNativeWebView) {
       dataToSend = JSON.stringify({
         error: e,
@@ -145,11 +145,7 @@ function totalEuclideanDistanceInKm(origin, markers) {
 }
 
 async function getBestRoute(bestFiveRoadSets) {
-  const bestFiveRoutes = await fetchAllRoutes(
-    origin,
-    [bestFiveRoadSets[0]], //need to change this later
-    origin
-  );
+  const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
   const bestRoute = findClosestRoute(bestFiveRoutes, distance);
   console.log(bestRoute.features[0].properties.totalDistance);
   return bestRoute;
@@ -161,46 +157,37 @@ async function fetchAllRoutes(origin, waypointsSets, destination) {
       await getPedestrianRoute(origin, waypointSet.roadCoords, destination)
   );
 
-  try {
-    const allRoutesData = await Promise.all(fetchRoutePromises);
-    return allRoutesData;
-  } catch (error) {
-    console.error("Error fetching pedestrian routes:", error);
-  }
+  const allRoutesData = await Promise.all(fetchRoutePromises);
+  return allRoutesData;
 }
 
 async function getPedestrianRoute(origin, waypoints, destination) {
-  try {
-    const response = await fetch(
-      "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
-      {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-          // appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
-          appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD",
-        },
-        body: JSON.stringify({
-          startName: "%EC%B6%9C%EB%B0%9C",
-          startX: origin.longitude,
-          startY: origin.latitude,
-          endName: "%EB%8F%84%EC%B0%A9%0A",
-          endX: destination.longitude,
-          endY: destination.latitude,
-          passList: waypoints
-            .map((point, index) => `${point.longitude},${point.latitude}`)
-            .join("_"),
-          speed: 8,
-        }),
-      }
-    );
+  const response = await fetch(
+    "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&callback=function",
+    {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
+      },
+      body: JSON.stringify({
+        startName: "%EC%B6%9C%EB%B0%9C",
+        startX: origin.longitude,
+        startY: origin.latitude,
+        endName: "%EB%8F%84%EC%B0%A9%0A",
+        endX: destination.longitude,
+        endY: destination.latitude,
+        passList: waypoints
+          .map((point, index) => `${point.longitude},${point.latitude}`)
+          .join("_"),
+        speed: 8,
+      }),
+    }
+  );
 
-    const routeData = await response.json();
-    return routeData;
-  } catch (error) {
-    console.error("Error fetching pedestrian route:", error);
-  }
+  const routeData = await response.json();
+  return routeData;
 }
 
 function findClosestRoute(routes, desiredDistance) {
