@@ -10,7 +10,7 @@ const mapOptions = {
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
 
-async () => {
+(async () => {
   try {
     if (window.ReactNativeWebView) {
       latitude = urlParams.get("lat");
@@ -50,7 +50,7 @@ async () => {
       window.ReactNativeWebView.postMessage(dataToSend);
     }
   }
-};
+})();
 
 // helper functions
 function getCurrentPosition() {
