@@ -129,36 +129,11 @@ async function fetchData() {
   );
   const bestRoute = findClosestRoute(bestFiveRoutes, distance);
   drawRouteOnKakaoMap(map, bestRoute);
-
-  // if (window.ReactNativeWebView) {
-  //   fetchDirections(
-  //     { latitude: latitude, longitude: longitude },
-  //     bestFiveRoadSets
-  //   );
-  // } else {
-  //   Geolocation.getCurrentPosition(
-  //     (position) => fetchDirections(position, bestFiveRoadSets),
-  //     (error) => console.log(error),
-  //     { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-  //   );
-  // }
-
-  // const bestRoute = bestFiveRoutes;
-
-  // center = new kakao.maps.LatLng(
-  //   (latitude +
-  //     bestFiveRoadSets.roadCoords[0].latitude +
-  //     bestFiveRoadSets.roadCoords[1].latitude) /
-  //     3,
-  //   (longitude +
-  //     bestFiveRoadSets.roadCoords[0].longitude +
-  //     bestFiveRoadSets.roadCoords[1].longitude) /
-  //     3
-  // );
+  console.log(bestRoute.features[0].properties.totalDistance);
 
   if (window.ReactNativeWebView) {
     dataToSend = JSON.stringify({
-      distance: distance,
+      expectedDistance: bestRoute.features[0].properties.totalDistance,
       bestFiveRoadSets: bestFiveRoadSets,
       err: roads,
     });
@@ -227,7 +202,6 @@ async function getPedestrianRoute(origin, waypoints, destination) {
     );
 
     const routeData = await response.json();
-    console.log(routeData.features[0].properties.totalDistance);
     return routeData;
   } catch (error) {
     console.error("Error fetching pedestrian route:", error);
@@ -248,7 +222,6 @@ function findClosestRoute(routes, desiredDistance) {
       closestRoute = route;
     }
   }
-
   return closestRoute;
 }
 
