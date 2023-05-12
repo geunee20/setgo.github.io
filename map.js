@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-var origin_map = new kakao.maps.LatLng(35.306069, 128.596367);
+var origin_map = new kakao.maps.LatLng(35.3061, 128.596328);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
@@ -9,11 +9,10 @@ const mapOptions = {
 };
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
-const ellipse = new kakao.maps.Ellipse({
+const circle = new kakao.maps.Circle({
   map: map,
   center: new kakao.maps.LatLng(35.306069, 128.596367),
-  rx: 50,
-  ry: 100,
+  radius: 5,
   strokeWeight: 2,
   strokeColor: "#FF00FF",
   strokeOpacity: 0.8,
