@@ -10,7 +10,7 @@ const mapOptions = {
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
 
-(async () => {
+async () => {
   try {
     if (window.ReactNativeWebView) {
       latitude = urlParams.get("lat");
@@ -29,7 +29,15 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     });
 
     if (distance) {
-      await fetchData();
+      const bestFiveRoadSets = await getBestFiveRoadSets();
+      const bestRoute = await getBestRoute(bestFiveRoadSets);
+      drawRouteOnKakaoMap(map, bestRoute);
+      if (window.ReactNativeWebView) {
+        dataToSend = JSON.stringify({
+          bestRoute: bestRoute,
+        });
+        window.ReactNativeWebView.postMessage(dataToSend);
+      }
     } else {
       map.setCenter(origin_map);
     }
@@ -42,7 +50,7 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       window.ReactNativeWebView.postMessage(dataToSend);
     }
   }
-})();
+};
 
 // helper functions
 function getCurrentPosition() {
@@ -51,7 +59,7 @@ function getCurrentPosition() {
   });
 }
 
-async function fetchData() {
+async function getBestFiveRoadSets() {
   const overpassQuery = `[out:json][timeout:5];(way[highway~"^(residential|footway|cycleway)$"](around:${
     (distance * 1000) / 4
   },${latitude},${longitude});>;);out;`;
@@ -113,22 +121,7 @@ async function fetchData() {
       Math.abs(distance * 0.7 - b.euclideanDistance)
   );
 
-  const bestFiveRoadSets = allRoadSets.slice(0, 5);
-  const bestFiveRoutes = await fetchAllRoutes(
-    origin,
-    [bestFiveRoadSets[0]], //need to change this later
-    origin
-  );
-  const bestRoute = findClosestRoute(bestFiveRoutes, distance);
-  drawRouteOnKakaoMap(map, bestRoute);
-  console.log(bestRoute.features[0].properties.totalDistance);
-
-  if (window.ReactNativeWebView) {
-    dataToSend = JSON.stringify({
-      bestRoute: bestRoute,
-    });
-    window.ReactNativeWebView.postMessage(dataToSend);
-  }
+  return allRoadSets.slice(0, 5);
 }
 
 function euclideanDistanceInKm(point1, point2) {
@@ -149,6 +142,17 @@ function totalEuclideanDistanceInKm(origin, markers) {
     euclideanDistanceInKm(marker1, marker2) +
     euclideanDistanceInKm(marker2, origin)
   );
+}
+
+async function getBestRoute(bestFiveRoadSets) {
+  const bestFiveRoutes = await fetchAllRoutes(
+    origin,
+    [bestFiveRoadSets[0]], //need to change this later
+    origin
+  );
+  const bestRoute = findClosestRoute(bestFiveRoutes, distance);
+  console.log(bestRoute.features[0].properties.totalDistance);
+  return bestRoute;
 }
 
 async function fetchAllRoutes(origin, waypointsSets, destination) {
@@ -174,8 +178,8 @@ async function getPedestrianRoute(origin, waypoints, destination) {
         headers: {
           accept: "application/json",
           "content-type": "application/json",
-          // appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
-          appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD",
+          appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD6IrNByYk",
+          // appKey: "sFsOVpTBQW2OAsZVdXkpw2mhVDKFIMKD",
         },
         body: JSON.stringify({
           startName: "%EC%B6%9C%EB%B0%9C",
@@ -237,23 +241,4 @@ function drawRouteOnKakaoMap(map, route) {
   const bounds = new kakao.maps.LatLngBounds();
   path.forEach((point) => bounds.extend(point));
   map.setBounds(bounds);
-}
-
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  var R = 6371;
-  var dLat = deg2rad(lat2 - lat1);
-  var dLon = deg2rad(lon2 - lon1);
-  var a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) *
-      Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c;
-  return d;
-}
-
-function deg2rad(deg) {
-  return deg * (Math.PI / 180);
 }
