@@ -15,12 +15,12 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
     if (window.ReactNativeWebView) {
       latitude = urlParams.get("lat");
       longitude = urlParams.get("lon");
-      distance = parseFloat(urlParams.get("distance"));
+      distance = parseFloat(urlParams.get("distance")) * 1000;
     } else {
       const position = await getCurrentPosition();
       latitude = position.coords.latitude;
       longitude = position.coords.longitude;
-      distance = parseFloat(urlParams.get("distance"));
+      distance = parseFloat(urlParams.get("distance")) * 1000;
     }
     origin_map = new kakao.maps.LatLng(latitude, longitude);
     const marker = new kakao.maps.Marker({
@@ -61,7 +61,7 @@ function getCurrentPosition() {
 
 async function getBestFiveRoadSets() {
   const overpassQuery = `[out:json][timeout:5];(way[highway~"^(residential|footway|cycleway)$"](around:${
-    (distance * 1000) / 4
+    distance / 4
   },${latitude},${longitude});>;);out;`;
 
   const response = await axios.get("https://overpass-api.de/api/interpreter", {
@@ -185,7 +185,7 @@ function calculateBearing(point1, point2) {
 
 async function getBestRoute(bestFiveRoadSets) {
   const bestFiveRoutes = await fetchAllRoutes(origin, bestFiveRoadSets, origin);
-  const bestRoute = findClosestRoute(bestFiveRoutes, distance);
+  const bestRoute = findBestRoute(bestFiveRoutes, distance);
   console.log(bestRoute.features[0].properties.totalDistance);
   return bestRoute;
 }
@@ -230,7 +230,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
   return routeData;
 }
 
-function findClosestRoute(routes, desiredDistance) {
+function findBestRoute(routes, desiredDistance) {
   let closestRoute = null;
   let smallestDifference = Infinity;
 
