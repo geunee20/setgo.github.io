@@ -20,8 +20,10 @@ const map = new kakao.maps.Map(mapContainer, mapOptions);
       // const position = await getCurrentPosition();
       // latitude = position.coords.latitude;
       // longitude = position.coords.longitude;
-      latitude = 37.574401;
-      longitude = 126.976302;
+      // latitude = 37.574401;
+      // longitude = 126.976302;
+      latitude = 37.492575;
+      longitude = 130.867143;
       distance = parseFloat(urlParams.get("distance"));
     }
     origin_map = new kakao.maps.LatLng(latitude, longitude);
