@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-var origin_map = new kakao.maps.LatLng(35.3061, 128.596328);
+var origin_map = new kakao.maps.LatLng(35.306088664175064, 128.59650490272188);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
@@ -11,8 +11,8 @@ const mapOptions = {
 const map = new kakao.maps.Map(mapContainer, mapOptions);
 const circle = new kakao.maps.Circle({
   map: map,
-  center: new kakao.maps.LatLng(35.306069, 128.596367),
-  radius: 5,
+  center: new kakao.maps.LatLng(35.306088664175064, 128.59650490272188),
+  radius: 15,
   strokeWeight: 2,
   strokeColor: "#FF00FF",
   strokeOpacity: 0.8,
@@ -83,8 +83,15 @@ async function getBestFiveRoadSets() {
   );
 
   const allRoadSets = [];
+  j = 0;
   for (let i = 0; i < 20; i++) {
     const randomIndices = new Set();
+    j++;
+    if (j % 100 == 0) {
+      if (allRoadSets.length >= 5) {
+        break;
+      }
+    }
 
     while (randomIndices.size < Math.min(2, roads.length)) {
       const randomIndex = Math.floor(Math.random() * roads.length);
