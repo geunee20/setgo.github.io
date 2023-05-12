@@ -100,11 +100,12 @@ async function getBestFiveRoadSets() {
     const minDistance = distance * 0.1;
 
     if (
-      euclideanDistanceInKm(origin, roadCoords[1]) >= minDistance &&
-      euclideanDistanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
-      euclideanDistanceInKm(roadCoords[1], origin) >= minDistance
+      distanceInKm(origin, roadCoords[1]) >= minDistance &&
+      distanceInKm(roadCoords[0], roadCoords[1]) >= minDistance &&
+      distanceInKm(roadCoords[1], origin) >= minDistance &&
+      calculateAngle(origin, roadCoords[0], roadCoords[1]) >= 45
     ) {
-      const euclideanDistance = totalEuclideanDistanceInKm(origin, roadCoords);
+      const euclideanDistance = totalDistanceInKm(origin, roadCoords);
 
       allRoadSets.push({
         roadCoords,
@@ -124,24 +125,62 @@ async function getBestFiveRoadSets() {
   return allRoadSets.slice(0, 5);
 }
 
-function euclideanDistanceInKm(point1, point2) {
-  const x1 = point1.latitude;
-  const y1 = point1.longitude;
-  const x2 = point2.latitude;
-  const y2 = point2.longitude;
+function distanceInKm(point1, point2) {
+  const toRadians = (degrees) => (degrees * Math.PI) / 180;
 
-  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) * 111.32;
+  const R = 6371;
+  const dLat = toRadians(point2.latitude - point1.latitude);
+  const dLon = toRadians(point2.longitude - point1.longitude);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(point1.latitude)) *
+      Math.cos(toRadians(point2.latitude)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
 }
 
-function totalEuclideanDistanceInKm(origin, markers) {
+function totalDistanceInKm(origin, markers) {
   const marker1 = markers[0];
   const marker2 = markers[1];
 
   return (
-    euclideanDistanceInKm(origin, marker1) +
-    euclideanDistanceInKm(marker1, marker2) +
-    euclideanDistanceInKm(marker2, origin)
+    distanceInKm(origin, marker1) +
+    distanceInKm(marker1, marker2) +
+    distanceInKm(marker2, origin)
   );
+}
+
+function calculateAngle(origin, waypoint1, waypoint2) {
+  const bearingToWaypoint1 = calculateBearing(origin, waypoint1);
+  const bearingToWaypoint2 = calculateBearing(origin, waypoint2);
+
+  let angleAtOrigin = bearingToWaypoint2 - bearingToWaypoint1;
+  if (angleAtOrigin < 0) {
+    angleAtOrigin += 360;
+  }
+
+  if (angleAtOrigin > 180) {
+    angleAtOrigin = 360 - angleAtOrigin;
+  }
+
+  return angleAtOrigin;
+}
+
+function calculateBearing(point1, point2) {
+  const lat1 = point1.latitude * (Math.PI / 180);
+  const lat2 = point2.latitude * (Math.PI / 180);
+  const longDiff = (point2.longitude - point1.longitude) * (Math.PI / 180);
+  const y = Math.sin(longDiff) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(longDiff);
+  const bearing = (Math.atan2(y, x) * (180 / Math.PI) + 360) % 360;
+
+  return bearing;
 }
 
 async function getBestRoute(bestFiveRoadSets) {
@@ -187,6 +226,7 @@ async function getPedestrianRoute(origin, waypoints, destination) {
   );
 
   const routeData = await response.json();
+  console.log(routeData.features[0].properties.totalDistance);
   return routeData;
 }
 
