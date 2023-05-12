@@ -4,7 +4,7 @@ var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
   center: origin_map,
-  level: 3,
+  level: 1,
   draggable: true,
 };
 
