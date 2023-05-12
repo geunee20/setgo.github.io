@@ -1,5 +1,5 @@
 const urlParams = new URLSearchParams(window.location.search);
-var origin_map = new kakao.maps.LatLng(33.450701, 126.570667);
+var origin_map = new kakao.maps.LatLng(35.306065, 128.59633);
 var latitude, longitude, distance, dataToSend;
 const mapContainer = document.getElementById("map");
 const mapOptions = {
