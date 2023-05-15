@@ -9,17 +9,18 @@ const mapOptions = {
 };
 
 const map = new kakao.maps.Map(mapContainer, mapOptions);
-const circle = new kakao.maps.Circle({
+
+const shapeOfWater = new kakao.maps.Marker({
   map: map,
-  center: new kakao.maps.LatLng(35.306088664175064, 128.59650490272188),
-  radius: 15,
-  strokeWeight: 2,
-  strokeColor: "#FF00FF",
-  strokeOpacity: 0.8,
-  strokeStyle: "dashed",
-  fillColor: "#00EEEE",
-  fillOpacity: 0.5,
+  position: new kakao.maps.LatLng(35.306088664175064, 128.59650490272188),
 });
+
+const infowindow = new kakao.maps.InfoWindow({
+  position: new kakao.maps.LatLng(35.306088664175064, 128.59650490272188),
+  content: '<div style="padding:5px;">셰입오브워터 많이 찾아주세요...</div>',
+});
+infowindow.open(map, marker);
+
 (async () => {
   try {
     if (window.ReactNativeWebView) {
