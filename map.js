@@ -19,7 +19,7 @@ const infowindow = new kakao.maps.InfoWindow({
   position: new kakao.maps.LatLng(35.306088664175064, 128.59650490272188),
   content: '<div style="padding:5px;">셰입오브워터 많이 찾아주세요...</div>',
 });
-infowindow.open(map, marker);
+infowindow.open(map, shapeOfWater);
 
 (async () => {
   try {
